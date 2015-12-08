@@ -132,7 +132,6 @@ module ActiveJob
         SYMBOL_KEYS_KEY, SYMBOL_KEYS_KEY.to_sym,
         WITH_INDIFFERENT_ACCESS_KEY, WITH_INDIFFERENT_ACCESS_KEY.to_sym,
       ]
-      private_constant :RESERVED_KEYS
 
       def serialize_hash_key(key)
         case key
