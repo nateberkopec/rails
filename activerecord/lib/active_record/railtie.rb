@@ -81,7 +81,8 @@ module ActiveRecord
       ActiveRecord::Base.attributes_for_inspect = :all
     end
 
-    runner do
+    runner do |app|
+      require "active_record/railties/console_sandbox" if app.sandbox?
       require "active_record/base"
     end
 

@@ -44,6 +44,29 @@ class Rails::RunnerTest < ActiveSupport::TestCase
     OUTPUT
   end
 
+  def test_rails_runner_with_sandbox_option
+    output = run_runner_command("--sandbox", "puts Rails.application.sandbox?")
+
+    assert_match(/Running in sandbox/, output)
+    assert_match(/true/, output)
+  end
+
+  def test_rails_runner_sandbox_short_option
+    output = run_runner_command("-s", "puts Rails.application.sandbox?")
+
+    assert_match(/Running in sandbox/, output)
+    assert_match(/true/, output)
+  end
+
+  def test_rails_runner_sandbox_disabled
+    add_to_config "config.disable_sandbox = true"
+
+    output = run_runner_command("--sandbox", "puts 'hello'", allow_failure: true)
+
+    assert_match(/sandbox mode is disabled/, output)
+    assert_equal 1, $?.exitstatus
+  end
+
   def test_rails_runner_with_conditional_executor
     assert_equal <<~OUTPUT, run_runner_command("puts Rails.application.executor.active?", allow_failure: true)
       true

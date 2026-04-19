@@ -7,6 +7,8 @@ module Rails
     class RunnerCommand < Base # :nodoc:
       include EnvironmentArgument
 
+      class_option :sandbox, aliases: "-s", type: :boolean, default: nil,
+        desc: "Rollback database modifications on exit."
       class_option :skip_executor, type: :boolean, aliases: "-w", desc: "Don't wrap with Rails Executor", default: false
 
       no_commands do
@@ -28,6 +30,16 @@ module Rails
         end
 
         boot_application!
+
+        if options[:sandbox]
+          if Rails.application.config.disable_sandbox
+            error "Error: Unable to run in sandbox mode as sandbox mode is disabled (config.disable_sandbox is true)."
+            exit 1
+          end
+          Rails.application.sandbox = true
+          say "Running in sandbox. Any modifications you make will be rolled back on exit."
+        end
+
         Rails.application.load_runner
 
         ARGV.replace(command_argv)
